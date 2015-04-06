@@ -19,27 +19,23 @@ distance (x:xs) (y:ys) = (if x == y then 0 else 1) + distance xs ys
 search :: String -> String -> Dictionary -> [[String]]
 search source target dictionary =
 	let 
-		dictionary' :: Dictionary
 		dictionary' = filter (\s -> length source == length s) dictionary
-		search' :: String -> String -> [String] -> [String] -> [[String]]
-		search' s t path visited =
+		search' s t path  =
 			let 
-				candidates = filter (\s' -> distance s s' == 1) dictionary'
-				visited' = union visited candidates
-				search'' :: String -> [[String]]
-				search'' s' = search' s' t (s':path) visited'
+				neighbours        = filter (\s' -> distance s s' == 1) dictionary'				
+				path'             = s : path
+				search'' s'       = search' s' t path'
 			in
-				--trace s $
 				if s == t then
-					trace (show path) [path]
+					[reverse path']
 				else
-					concatMap search'' (sortBy (comparing (\s' -> distance s' t)) (candidates \\ visited))
+					concatMap search'' (sortBy (comparing (\s' -> distance s' t)) (neighbours \\ path))
 	in
-		search' source target [source] [source]	
+		search' source target []
 
 main = do
 	contents <- readFile "dictionary.txt"
-	putStrLn  (show(search "lead" "gold" (lines contents)))
+	putStrLn  (show(search "cat" "dog" (lines contents)))
 
 {-
 puzzle :: String -> String -> [String] -> [String]
