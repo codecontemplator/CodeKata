@@ -14,7 +14,7 @@ distance :: Eq a => [a] -> [a] -> Int
 distance [] [] = 0
 distance [] _  = maxBound
 distance _ []  = maxBound
-distance (x:xs) (y:ys) = let d = if x == y then 0 else 1 in d + distance xs ys 
+distance (x:xs) (y:ys) = (if x == y then 0 else 1) + distance xs ys 
 
 search :: String -> String -> Dictionary -> [[String]]
 search source target dictionary =
@@ -39,7 +39,7 @@ search source target dictionary =
 
 main = do
 	contents <- readFile "dictionary.txt"
-	putStrLn  (show(search "cat" "dog" (lines contents)))
+	putStrLn  (show(search "lead" "gold" (lines contents)))
 
 {-
 puzzle :: String -> String -> [String] -> [String]
