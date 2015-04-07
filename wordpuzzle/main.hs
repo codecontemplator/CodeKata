@@ -35,11 +35,16 @@ graph dictionary =
 		mkGraph nodes edges
 
 
+addIfNotPresent :: [String] -> [String] -> [String]
+addIfNotPresent dictionary words = dictionary ++ newWords
+	where newWords = filter (\w -> notElem w dictionary) words
+
 main = do
 	contents <- readFile "dictionary.txt"
-	let sourceString = "lead"
-	let destString = "gold"
-	let dictionary = filter (\w -> length w == length sourceString) (lines contents)
+	let sourceString = "ruby"
+	let destString = "code"
+	let dictionary_ = filter (\w -> length w == length sourceString) (lines contents)
+	let dictionary = addIfNotPresent dictionary_ [sourceString, destString]
 	let g = graph dictionary	
 	let toIndex w = fromJust $ elemIndex w dictionary
 	let fromIndex i = dictionary!!i
