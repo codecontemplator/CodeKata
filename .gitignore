@@ -50,3 +50,4 @@ wordpuzzle/main.hi
 wordpuzzle/cpp/wordpuzzle/wordpuzzle.opensdf
 *.sdf
 wordpuzzle/cpp/wordpuzzle/wordpuzzle.vcxproj.filters
+*.hi
