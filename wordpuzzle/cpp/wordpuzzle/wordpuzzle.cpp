@@ -53,7 +53,7 @@ static bool neighbours(const string& s1, const string& s2)
 
 int main(int, char *[])
 {
-	typedef adjacency_list<listS, vecS, undirectedS, no_property, property<edge_weight_t, int>> graph_t;
+	typedef adjacency_list<listS, vecS, undirectedS> graph_t;
 	typedef graph_traits<graph_t>::vertex_descriptor vertex_descriptor_t;
 	typedef graph_traits<graph_t>::edge_descriptor edge_descriptor_t;
 	
