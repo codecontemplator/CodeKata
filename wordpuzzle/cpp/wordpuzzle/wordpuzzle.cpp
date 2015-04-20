@@ -19,14 +19,9 @@
 
 struct fixed_weight_pmap { };
 
-template <class K>
-inline int get(const fixed_weight_pmap& pa, const K& k)  { return 1; }
+template <class K> inline int get(const fixed_weight_pmap& pa, const K& k)  { return 1; }
 
-namespace boost
-{
-	template<>
-	struct property_traits<fixed_weight_pmap> { typedef int value_type; };
-}
+namespace boost { template<> struct property_traits<fixed_weight_pmap> { typedef int value_type; }; }
 
 bool neighbours(const std::string& s1, const std::string& s2)
 {
@@ -56,7 +51,7 @@ struct context_t
 	index_lookup_t word2index;
 };
 
-void initialize(context_t ctx)
+void initialize(context_t& ctx)
 {
 	using namespace boost;
 	using namespace std;
@@ -69,10 +64,6 @@ void initialize(context_t ctx)
 	dictionary_t dictionary(
 		istream_iterator<string>(ifstream("dictionary.txt")),
 		istream_iterator<string>());
-
-	//auto make_pair2 = [](const string& s, const index_t& i) { 
-	//	return std::pair<string, index_t>(s, i);  
-	//};
 
 	index_lookup_t word2index;
 	transform(
