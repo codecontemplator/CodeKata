@@ -1,8 +1,3 @@
-// wordpuzzle.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
-
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -11,11 +6,11 @@
 #include <algorithm>
 
 #include <boost/config.hpp>
+#include <boost/range/counting_range.hpp>
+#include <boost/property_map/property_map.hpp>
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/property_map/property_map.hpp>
-#include <boost/range/counting_range.hpp>
 
 struct fixed_weight_pmap { };
 
@@ -75,7 +70,7 @@ void initialize(context_t& ctx)
 	graph_t g(dictionary.size());
 	for (auto i = 0U; i < dictionary.size(); ++i)
 	{
-		if (i % 1000 == 999) { cout << i << " (" << dictionary.size() << ")" << endl; }
+		if (i % 5000 == 0) { cout << i << " (" << dictionary.size() << ")" << endl; }
 		for (auto j = i + 1; j < dictionary.size(); ++j)
 		{
 			if (neighbours(dictionary[i], dictionary[j]))
@@ -127,7 +122,7 @@ int main(int, char *[])
 {
 	using namespace std;
 
-	cout << "initializing... please wait...";
+	cout << "initializing..." << endl;
 	context_t ctx;
 	initialize(ctx);
 	cout << "done!" << endl;
@@ -135,15 +130,22 @@ int main(int, char *[])
 	while (true)
 	{
 		string source, target;
-		cout << "source:" << endl;
+		cout << "source: ";
 		cin >> source;
-		cout << "target:" << endl;
+		cout << "target: ";
 		cin >> target;
 
-		auto path = wordchain(ctx, source, target);
-		cout << "path:" << endl;
-		copy(path.begin(), path.end(), ostream_iterator<string>(cout, " "));
-		cout << endl;
+		if (source.length() == target.length())
+		{
+			auto path = wordchain(ctx, source, target);
+			cout << "path: ";
+			copy(path.begin(), path.end(), ostream_iterator<string>(cout, " "));
+			cout << endl;
+		}
+		else
+		{
+			cout << "source and target must be of same length" << endl;
+		}
 	}
 
 	return 0;
