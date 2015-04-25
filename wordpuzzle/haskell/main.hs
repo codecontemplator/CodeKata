@@ -2,68 +2,49 @@
 -- http://codekata.com/kata/kata19-word-chains/
 -- dictionary from: http://www.mieliestronk.com/corncob_lowercase.txt
 
-import Data.List --hiding (union,insert,delete)
+import Data.List
 import Data.Maybe
 import Debug.Trace
 import Data.Ord
---import Data.Graph
 import Data.Array
 import Data.Tree
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.Tree
---import Data.Graph.Inductive.PatriciaTree
 import Data.Graph.Inductive.Query.SP
---import Control.Monad
---import Control.Monad.Trans
---import Control.Monad.LoopWhile
---import Data.Function.Memoize
+import Data.Time.Clock
 
-type Dictionary = [String]
+type Word = String
+type Dictionary = [Word]
 
-traceex x = trace (show x) $ x
-
-distance :: [Char] -> [Char] -> Int
---distance [] [] = 0
---distance [] _  = 10000
---distance _ []  = 10000
---distance (x:xs) (y:ys) = (if x == y then 0 else 1) + distance xs ys 
-distance xs ys = 
-		if length xs == length ys then
-			distance' 0 xs ys
-		else
-			max
+neighbours :: Word -> Word -> Bool
+neighbours xs ys = 
+        length xs == length ys &&  distance 0 xs ys == 1
 	where
-		max = 10000
-		distance' d [] [] = d
-		distance' d (x:xs) (y:ys) =
+		distance d [] [] = d
+		distance d (x:xs) (y:ys) =
 			case (x==y, d) of
-				(False, 0)  -> distance' 1 xs ys
-				(False, _)  -> max
-				(True, d) -> distance' d xs ys
+				(False, 0)  -> distance 1 xs ys
+				(False, _)  -> -1 -- no use to continue... 
+				(True, d) -> distance d xs ys
 
-
-graph :: [String] -> Gr String Int
+graph :: Dictionary -> Gr Word Int
 graph dictionary = 
     let
-        nodes :: [LNode String]
-        !nodes = zip [0..] dictionary
+        nodes :: [LNode Word]
+        nodes = zip [0..] dictionary
         edges :: [LEdge Int]
-        !edges = concatMap neighbours nodes
-        neighbours :: LNode String -> [LEdge Int]    
-        neighbours n@(i,w) = map (\(i',_) -> (i,i',1)) (filter (\(_,w') -> distance w w' == 1) nodes)
+        edges = [(i,i',1) | (i,w) <- nodes, (i',w') <- nodes, i /= i', neighbours w w']
     in
-        mkGraph (trace "nodes" nodes) (trace "edges" edges)
-
-
-addIfNotPresent :: [String] -> [String] -> [String]
-addIfNotPresent dictionary words = dictionary ++ newWords
-    where newWords = filter (\w -> notElem w dictionary) words
+        mkGraph nodes edges
 
 main = do
     contents <- readFile "dictionary.txt"
-    let dictionary_ = lines contents
-    let dictionary = filter (\s -> length s < 5) $ addIfNotPresent dictionary_ ["ruby"]
-    let !g = graph dictionary    
+    let dictionary = lines contents
+    putStrLn "Initializing..."
+    t1 <- getCurrentTime
+    let !g = graph dictionary
+    t2 <- getCurrentTime
+    putStrLn $ "Done. Took " ++ (show (diffUTCTime t2 t1))
     let toIndex w = fromJust $ elemIndex w dictionary
     let fromIndex i = dictionary!!i
     let loop = do
