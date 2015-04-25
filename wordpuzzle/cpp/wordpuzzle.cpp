@@ -98,13 +98,11 @@ std::list<std::string> wordchain(context_t& ctx, const std::string& source, cons
 	const auto targetIndex = ctx.word2index[target];
 
 	vector<vertex_descriptor_t> predecessors(num_vertices(ctx.g));
-	vector<int> distances(num_vertices(ctx.g));
 
 	dijkstra_shortest_paths(
 		ctx.g,
 		sourceIndex,
 		predecessor_map(&predecessors[0]).
-		distance_map(&distances[0]).
 		weight_map(fixed_weight_pmap())
 		);
 
