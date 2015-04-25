@@ -1,3 +1,6 @@
+// problem from: http://codekata.com/kata/kata19-word-chains/
+// dictionary from: http://www.mieliestronk.com/corncob_lowercase.txt
+
 #include <iostream>
 #include <fstream>
 #include <map>
