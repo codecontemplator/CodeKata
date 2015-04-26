@@ -1,5 +1,6 @@
 {-# LANGUAGE BangPatterns #-}
 -- http://codekata.com/kata/kata19-word-chains/
+-- http://www.wordchains.com/
 -- dictionary from: http://www.mieliestronk.com/corncob_lowercase.txt
 
 import Data.List
@@ -18,14 +19,18 @@ type Dictionary = [Word]
 
 neighbours :: Word -> Word -> Bool
 neighbours xs ys = 
-        length xs == length ys &&  distance 0 xs ys == 1
-	where
-		distance d [] [] = d
-		distance d (x:xs) (y:ys) =
-			case (x==y, d) of
-				(False, 0)  -> distance 1 xs ys
-				(False, _)  -> -1 -- no use to continue... 
-				(True, d) -> distance d xs ys
+        case length xs - length ys of
+            0  -> chardiff xs ys == 1 || anagram xs ys
+            1  -> elem ys (substrings xs)
+            -1 -> elem xs (substrings ys)
+            _  -> False
+    where
+        anagram    xs ys = xs /= ys && sort xs == sort ys
+        chardiff   xs ys = length $ filter (\(a,b) -> a /= b) $ zip xs ys
+        substrings xs    = unfoldr generate ([],xs)
+            where
+                generate (_,[])      = Nothing
+                generate (xs,(y:ys)) = Just (xs++ys, (xs++[y],ys))
 
 graph :: Dictionary -> Gr Word Int
 graph dictionary = 
@@ -48,7 +53,7 @@ main = do
     let toIndex w = fromJust $ elemIndex w dictionary
     let fromIndex i = dictionary!!i
     let loop = do
-    	putStrLn "source:"
+        putStrLn "source:"
         sourceString <- getLine
         putStrLn "target:"
         destString <- getLine
