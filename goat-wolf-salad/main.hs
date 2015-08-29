@@ -1,8 +1,5 @@
 -- https://go-left.com/blog/programming/100-little-programming-exercises/
 
---{-# LANGUAGE BangPatterns #-}
---import Debug.Trace
-
 import Control.Monad
 import Data.List
 
