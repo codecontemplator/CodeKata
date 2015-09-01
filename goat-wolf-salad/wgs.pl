@@ -1,6 +1,8 @@
 /** http://www.swi-prolog.org/pldoc/doc/swi/library/lists.pl */
 :- use_module(library(lists)).
 
+solve(S) :- mover([goat,wolf,salad],[],[],S).
+
 mover(L,R,B,S) :-
 	append(L,B,L1),
 	member(X,L),
