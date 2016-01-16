@@ -16,25 +16,38 @@ import Data.Time.Clock
 
 type Word = String
 type Dictionary = [Word]
+data Ruleset = Codekata | Wordchains
 
-neighbours :: Word -> Word -> Bool
-neighbours xs ys = 
+anagram :: Word -> Word -> Bool
+anagram xs ys = xs /= ys && sort xs == sort ys
+
+chardiff :: Word -> Word -> Int
+chardiff xs ys = length $ filter (\(a,b) -> a /= b) $ zip xs ys
+
+substrings :: Word -> [Word]
+substrings xs = unfoldr generate ([],xs)
+    where
+        generate (_,[])      = Nothing
+        generate (xs,(y:ys)) = Just (xs++ys, (xs++[y],ys))
+
+neighbours_codekata :: Word -> Word -> Bool
+neighbours_codekata xs ys = 
+        case length xs - length ys of
+            0  -> chardiff xs ys == 1
+            _  -> False
+
+neighbours_wordchains :: Word -> Word -> Bool
+neighbours_wordchains xs ys = 
         case length xs - length ys of
             0  -> chardiff xs ys == 1 || anagram xs ys
             1  -> elem ys (substrings xs)
             -1 -> elem xs (substrings ys)
             _  -> False
-    where
-        anagram    xs ys = xs /= ys && sort xs == sort ys
-        chardiff   xs ys = length $ filter (\(a,b) -> a /= b) $ zip xs ys
-        substrings xs    = unfoldr generate ([],xs)
-            where
-                generate (_,[])      = Nothing
-                generate (xs,(y:ys)) = Just (xs++ys, (xs++[y],ys))
 
-graph :: Dictionary -> Gr Word Int
-graph dictionary = 
+graph :: Dictionary -> Ruleset -> Gr Word Int
+graph dictionary ruleset = 
     let
+        neighbours = case ruleset of Codekata -> neighbours_codekata; Wordchains -> neighbours_wordchains;
         nodes :: [LNode Word]
         nodes = zip [0..] dictionary
         edges :: [LEdge Int]
@@ -43,11 +56,13 @@ graph dictionary =
         mkGraph nodes edges
 
 main = do
+    putStrLn "Select ruleset: 1=codekata.com, 2=wordchains.com"
+    ruleset <- fmap (\x -> if x == "1" then Codekata else Wordchains) getLine
     contents <- readFile "dictionary.txt"
     let dictionary = lines contents
     putStrLn "Initializing..."
     t1 <- getCurrentTime
-    let !g = graph dictionary
+    let !g = graph dictionary ruleset
     t2 <- getCurrentTime
     putStrLn $ "Done. Took " ++ (show (diffUTCTime t2 t1))
     let toIndex w = fromJust $ elemIndex w dictionary
